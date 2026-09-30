@@ -2,6 +2,8 @@
 
 This repository contains university laboratory works for the **Machine Learning and Artificial Intelligence** course.
 
+All data preprocessing, analysis, model architectures, and final validation outputs are fully preserved and saved inside the interactive Jupyter Notebook (.ipynb) file for quick and easy review.
+
 ## Projects Overview
 
 ### Lab 1: Allstate Claims Severity Prediction (Var. 5)
