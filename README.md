@@ -1,4 +1,4 @@
-# Machine Learning and Artificial Intelligence — Labs
+   # Machine Learning and Artificial Intelligence — Labs
 
 This repository contains university laboratory works for the **Machine Learning and Artificial Intelligence** course.
 
@@ -37,3 +37,30 @@ By introducing advanced deep learning techniques, the custom architecture comple
 * **Target Shifting (+400) & MAE Loss:** Perfectly balanced the model's focus between average and large payouts, preventing the loss function from exploding on outliers.
 * **Pre-Activation Safeguard:** Kept the weights stable and protected them from inflating over a long 100-epoch run.
 * **LayerNorm over BatchNorm:** Instead of washing out rare signals across a large batch size of 1024, `LayerNorm` preserved unique characteristics of complex features (like `cat116`). This allowed the model to meticulously learn the profiles of expensive, non-standard insurance cases, which directly led to the massive drop in RMSE.
+
+
+
+### Lab 2: Experiment Tracking & Infrastructure via MLflow (Docker-based)
+* **Goal:** Scale the existing ML pipeline by deploying a fully containerized MLOps tracking infrastructure and evaluating multiple experiment runs.
+* **Tech Stack:** Docker, Docker Compose, MLflow, PostgreSQL, Rustfs (S3-compatible storage), Keras 3 (JAX on GPU backend), Scikit-Learn.
+
+While MLflow supports unified tracking out of the box, it mixes experiments across different working branches by default. To implement a production-grade, professional setup, I deployed an isolated multi-container environment via Docker Compose to abstract MLOps microservices away from the host system.
+
+#### Enterprise-Grade Infrastructure Architecture
+
+The decoupled network is defined across several highly reliable microservices:
+1. **Metadata Store (`PostgreSQL`)**: A separate container instance hosting a relational database to systematically organize hyperparameter grids, metrics, run IDs, and training statuses.
+2. **Artifact Store (`Rustfs`)**: An ultra-fast, S3-compatible object storage server container that acts as a secure data vault for preserving compiled training logs, evaluation charts, and trained JAX serialized model binaries (`.keras`).
+3. **Tracking Server (`MLflow`)**: The centralized MLOps backend hub connected natively to the database and S3 buckets. It is accessible externally via a dedicated forwarded reverse-proxy port (`5801`), making it completely invisible to host system root execution conflicts.
+
+#### ML Pipeline Integration & Autologging
+The tracking system seamlessly intercepts metrics from multiple deep learning and preprocessing frameworks running on the native machine:
+* **`mlflow.keras.autolog()`**: Intercepts the JAX high-performance JIT compiler execution loop, automatically tracking deep learning architecture layers, parameters, learning rate decay steps (`ReduceLROnPlateau`), and historical loss steps across every epoch.
+* **`mlflow.sklearn.autolog()`**: Automatically captures preprocessing state transitions from `StandardScaler` and `OrdinalEncoder` feature-engineering matrices.
+
+#### Experiment Evaluation Run Matrix
+To thoroughly evaluate structural adjustments, a series of 3 distinct, fully isolated experiment iterations were pushed directly into the remote MLflow tracking core:
+
+1. **Run 1 — `Sequential_Base_Model`**: Fixed the baseline network performance metrics and validated the automatic Docker network transmission loops.
+2. **Run 2 — `Sequential_Base_Model_large`**: Evaluated expanding hidden capacities (`256 -> 128 -> 64`) and adjusting optimizer batch constraints.
+3. **Run 3 — `ResNet_Log_Target`**: Pushed the custom advanced hybrid architecture (from Lab 1) to the server. Since training occurred in the log-transformed space, validation tracking automatically intercepted log-losses, while final production metrics were post-processed via exponential inverse-shifting (`np.exp(pred) - 400`) to guarantee an honest, real-dollar comparison matrix in the MLflow control panel.
