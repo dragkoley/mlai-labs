@@ -64,3 +64,19 @@ To thoroughly evaluate structural adjustments, a series of 3 distinct, fully iso
 1. **Run 1 — `Sequential_Base_Model`**: Fixed the baseline network performance metrics and validated the automatic Docker network transmission loops.
 2. **Run 2 — `Sequential_Base_Model_large`**: Evaluated expanding hidden capacities (`256 -> 128 -> 64`) and adjusting optimizer batch constraints.
 3. **Run 3 — `ResNet_Log_Target`**: Pushed the custom advanced hybrid architecture (from Lab 1) to the server. Since training occurred in the log-transformed space, validation tracking automatically intercepted log-losses, while final production metrics were post-processed via exponential inverse-shifting (`np.exp(pred) - 400`) to guarantee an honest, real-dollar comparison matrix in the MLflow control panel.
+
+
+### Lab 3: Image Classification with CNNs
+
+This project focuses on image classification using convolutional neural networks (Variant 6: ResNet152).
+
+#### Key Highlights
+
+* **Pretrained Model Inference:** Tested a ready-to-use `ResNet152` pretrained on ImageNet on a sample image to predict the top-5 classes.
+* **Custom CNN from Scratch:** Built and trained a lightweight 3-block ResNet architecture with `LayerNormalization` on two datasets:
+   * `horses_or_humans`: achieved 99% accuracy.
+   * `cats_vs_dogs`: achieved 86% accuracy.
+* **Transfer Learning:** Fine-tuned `ResNet152` by freezing base layers and training a custom classification head on the same datasets:
+   * `horses_or_humans`: achieved 100% accuracy.
+   * `cats_vs_dogs`: achieved 99% accuracy.
+* **Evaluation & Comparison:** Analyzed performance using Confusion Matrices, Classification Reports (Accuracy, Precision, Recall, F1-score), and per-class / macro-average Precision-Recall curves. Transfer learning with ResNet152 significantly outperformed the custom network on the more complex `cats_vs_dogs` dataset.

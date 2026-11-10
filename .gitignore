@@ -2,3 +2,6 @@
 .idea
 data/
 *.iml
+assets/
+models/
+corrupted_images/
